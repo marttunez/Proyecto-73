@@ -9,6 +9,7 @@ export const cartasPartido: Carta[] = [
     opciones: [
       {
         texto: 'Expropiar sin indemnización',
+        intensidad: 8, // muy controversial: acelera polarización real
         efectos: {
           'polls.up': 2.0,
           'opp.relacionesDC': -1,
@@ -20,6 +21,7 @@ export const cartasPartido: Carta[] = [
       },
       {
         texto: 'Negociar con la DC',
+        intensidad: 1, // moderada: busca consenso institucional
         efectos: {
           'polls.dc': 1,
           'partido.cohesionPartidaria': -3,
@@ -37,6 +39,7 @@ export const cartasPartido: Carta[] = [
     opciones: [
       {
         texto: 'Favorecer ala moderada',
+        intensidad: 1,
         efectos: {
           'partido.cohesionPartidaria': 4,
           'partido.militarizacionMIR': -1,
@@ -46,6 +49,7 @@ export const cartasPartido: Carta[] = [
       },
       {
         texto: 'Favorecer ala radical',
+        intensidad: 6,
         efectos: {
           'partido.militarizacionMIR': 2,
           'partido.registradosMIR': 2000,
@@ -63,6 +67,7 @@ export const cartasPartido: Carta[] = [
     opciones: [
       {
         texto: 'Apoyar y armar los cordones',
+        intensidad: 9, // muy radical: paralelismo armado al margen del Estado
         efectos: {
           'polls.up': 1.5,
           'partido.militarizacionMIR': 2,
@@ -72,6 +77,7 @@ export const cartasPartido: Carta[] = [
       },
       {
         texto: 'Contener e institucionalizar',
+        intensidad: 2,
         efectos: {
           'partido.cohesionPartidaria': -2,
           'pais.desempleo': -0.3,
@@ -88,6 +94,7 @@ export const cartasPartido: Carta[] = [
     opciones: [
       {
         texto: 'Movilización de base puerta a puerta',
+        intensidad: 2,
         efectos: {
           'partido.presupuestoPartido': -1,
           'polls.up': 2,
@@ -96,6 +103,7 @@ export const cartasPartido: Carta[] = [
       },
       {
         texto: 'Guardar recursos para el mes de la elección',
+        intensidad: 0, // completamente moderada / de bajo perfil
         efectos: {
           'partido.presupuestoPartido': 1,
           'polls.up': -0.5,

@@ -8,6 +8,7 @@ export const eventos: Evento[] = [
     opciones: [
       {
         texto: 'Negociar concesiones',
+        intensidad: 2,
         efectos: {
           'pais.presupuestoNacional': -1,
           'polls.dc': -0.5,
@@ -16,6 +17,7 @@ export const eventos: Evento[] = [
       },
       {
         texto: 'Militarizar rutas',
+        intensidad: 7,
         efectos: {
           'ffaa.lealtadEjercito': -2,
           'polls.up': -1,
@@ -31,6 +33,7 @@ export const eventos: Evento[] = [
     opciones: [
       {
         texto: 'Permitir la marcha',
+        intensidad: 1,
         efectos: {
           'opp.relacionesDC': 1,
           'opp.militarizacionPyL': 1,
@@ -39,6 +42,7 @@ export const eventos: Evento[] = [
       },
       {
         texto: 'Reprimir con Carabineros',
+        intensidad: 8,
         efectos: {
           'ffaa.lealtadCarabineros': -1.5,
           'polls.up': -0.5,
@@ -54,6 +58,7 @@ export const eventos: Evento[] = [
     opciones: [
       {
         texto: 'Volcar recursos estatales a la campaña',
+        intensidad: 4,
         efectos: {
           'pais.presupuestoNacional': -1,
           'polls.up': 1.5,
@@ -62,6 +67,7 @@ export const eventos: Evento[] = [
       },
       {
         texto: 'No intervenir',
+        intensidad: 0,
         efectos: {
           'partido.cohesionPartidaria': 1,
           'polls.up': -0.3,
@@ -76,6 +82,7 @@ export const eventos: Evento[] = [
     opciones: [
       {
         texto: 'Investigar y purgar oficiales sospechosos',
+        intensidad: 6,
         efectos: {
           'ffaa.lealtadEjercito': -2,
           'ffaa.lealtadAerea': -1,
@@ -84,6 +91,7 @@ export const eventos: Evento[] = [
       },
       {
         texto: 'Ignorar el rumor para no generar más tensión',
+        intensidad: 1,
         efectos: {
           'ffaa.lealtadEjercito': 1,
           'partido.militarizacionMIR': 1,
@@ -98,6 +106,7 @@ export const eventos: Evento[] = [
     opciones: [
       {
         texto: 'Legalizar la toma',
+        intensidad: 5,
         efectos: {
           'polls.up': 1,
           'opp.relacionesPN': -1,
@@ -106,6 +115,7 @@ export const eventos: Evento[] = [
       },
       {
         texto: 'Ordenar el desalojo',
+        intensidad: 4,
         efectos: {
           'ffaa.lealtadCarabineros': -1,
           'partido.militarizacionMIR': 1,

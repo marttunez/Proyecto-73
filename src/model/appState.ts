@@ -5,6 +5,12 @@ import { cartasPartido } from '../content/cartasPartido';
 import { cartasGobierno } from '../content/cartasGobierno';
 import { eventos as eventosData } from '../content/eventos';
 import { aplicarEfectosConDinamica } from './pollDynamics';
+import {
+  type AsientoPartido,
+  type ResultadoElectoral,
+  calcularParlamento,
+  determinarResultado,
+} from './parlamento';
 
 export const ROBOS_MAX_POR_TURNO = 2;
 export const EVENTOS_MIN = 1;
@@ -14,23 +20,25 @@ export const TOTAL_TURNOS = 12;
 export type Fase = 'TURNO' | 'EVENTO' | 'FIN';
 
 export interface AppState {
-  mano: Carta[];
-  resultadoFinal: boolean;
   game: GameState;
   fase: Fase;
   mazoPartido: Mazo<Carta>;
   mazoGobierno: Mazo<Carta>;
   mazoEventos: Mazo<Evento>;
-  manoActual: Carta[]; // cartas ya robadas este turno, sin jugar aún
-  robosRestantes: number; // cuántos robos le quedan este turno (max 2)
-  cartaSeleccionada: Carta | null; // carta cuyas opciones se están mostrando
+  mano: Carta[]; // PERSISTENTE: se acumula turno a turno, solo se quita la carta jugada
+  robosRestantes: number; // se reinicia a ROBOS_MAX_POR_TURNO cada turno
+  cartaSeleccionada: Carta | null;
   eventosPendientes: Evento[];
+  resultadoFinal: {
+    escanos: AsientoPartido[];
+    resultado: ResultadoElectoral;
+  } | null;
 }
 
 function iniciarTurno(state: AppState): AppState {
   return {
     ...state,
-    manoActual: [],
+    // OJO: 'mano' NO se toca aquí a propósito, para que persista entre turnos
     robosRestantes: ROBOS_MAX_POR_TURNO,
     cartaSeleccionada: null,
     fase: 'TURNO',
@@ -44,12 +52,11 @@ export function crearAppStateInicial(): AppState {
     mazoPartido: crearMazo(cartasPartido),
     mazoGobierno: crearMazo(cartasGobierno),
     mazoEventos: crearMazo(eventosData),
-    manoActual: [],
+    mano: [],
     robosRestantes: ROBOS_MAX_POR_TURNO,
     cartaSeleccionada: null,
     eventosPendientes: [],
-    mano: [],
-    resultadoFinal: false
+    resultadoFinal: null,
   };
   return iniciarTurno(base);
 }
@@ -60,6 +67,13 @@ export type AppAction =
   | { type: 'JUGAR_OPCION'; opcion: Opcion }
   | { type: 'JUGAR_EVENTO'; opcion: Opcion }
   | { type: 'RESET' };
+
+function finalizarPartida(game: GameState): AppState['resultadoFinal'] {
+  const escanos = calcularParlamento(game.polls);
+  const escanosUP = escanos.find((e) => e.partido === 'up')?.escanos ?? 0;
+  const resultado = determinarResultado(escanosUP);
+  return { escanos, resultado };
+}
 
 export function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
@@ -73,7 +87,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         return {
           ...state,
           mazoPartido: mazo,
-          manoActual: [...state.manoActual, ...mano],
+          mano: [...state.mano, ...mano],
           robosRestantes: state.robosRestantes - 1,
         };
       } else {
@@ -82,7 +96,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         return {
           ...state,
           mazoGobierno: mazo,
-          manoActual: [...state.manoActual, ...mano],
+          mano: [...state.mano, ...mano],
           robosRestantes: state.robosRestantes - 1,
         };
       }
@@ -97,12 +111,15 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'JUGAR_OPCION': {
       if (state.fase !== 'TURNO' || !state.cartaSeleccionada) return state;
 
-      const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion.efectos);
+      const cartaJugada = state.cartaSeleccionada;
+      const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion);
 
-      const partidoRobadas = state.manoActual.filter((c) => c.tipo === 'partido');
-      const gobiernoRobadas = state.manoActual.filter((c) => c.tipo === 'gobierno');
-      const mazoPartido = descartar(state.mazoPartido, partidoRobadas);
-      const mazoGobierno = descartar(state.mazoGobierno, gobiernoRobadas);
+      // Solo se descarta la carta JUGADA. Las demás cartas en mano persisten para el próximo turno.
+      const nuevaMano = state.mano.filter((c) => c.id !== cartaJugada.id);
+      const mazoPartido =
+        cartaJugada.tipo === 'partido' ? descartar(state.mazoPartido, [cartaJugada]) : state.mazoPartido;
+      const mazoGobierno =
+        cartaJugada.tipo === 'gobierno' ? descartar(state.mazoGobierno, [cartaJugada]) : state.mazoGobierno;
 
       const cantidadEventos = EVENTOS_MIN + Math.floor(Math.random() * (EVENTOS_MAX - EVENTOS_MIN + 1));
       const { mano: eventosPendientes, mazo: mazoEventos } = robar(state.mazoEventos, cantidadEventos);
@@ -110,11 +127,10 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         game: nuevoGame,
+        mano: nuevaMano,
         mazoPartido,
         mazoGobierno,
         mazoEventos,
-        manoActual: [],
-        robosRestantes: 0,
         cartaSeleccionada: null,
         eventosPendientes,
         fase: eventosPendientes.length > 0 ? 'EVENTO' : 'TURNO',
@@ -124,7 +140,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'JUGAR_EVENTO': {
       if (state.fase !== 'EVENTO') return state;
 
-      const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion.efectos);
+      const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion);
       const [resuelto, ...restantes] = state.eventosPendientes;
       const mazoEventos = descartar(state.mazoEventos, [resuelto]);
 
@@ -136,7 +152,14 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       const gameConTurno = { ...nuevoGame, turno: turnoSiguiente };
 
       if (turnoSiguiente > TOTAL_TURNOS) {
-        return { ...state, game: gameConTurno, mazoEventos, eventosPendientes: [], fase: 'FIN' };
+        return {
+          ...state,
+          game: gameConTurno,
+          mazoEventos,
+          eventosPendientes: [],
+          fase: 'FIN',
+          resultadoFinal: finalizarPartida(gameConTurno),
+        };
       }
 
       return iniciarTurno({ ...state, game: gameConTurno, mazoEventos, eventosPendientes: [] });

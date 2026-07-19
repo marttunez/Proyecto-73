@@ -19,19 +19,18 @@ function App() {
     dispatch({ type: 'JUGAR_EVENTO', opcion });
   }
 
-  if (state.fase === 'FIN' && state.resultadoFinal && typeof state.resultadoFinal === 'object') {
-    const resultado = state.resultadoFinal as any;
+  if (state.fase === 'FIN' && state.resultadoFinal) {
     return (
       <ParlamentoView
-        escanos={resultado.escanos}
-        resultado={resultado.resultado}
+        escanos={state.resultadoFinal.escanos}
+        resultado={state.resultadoFinal.resultado}
         onReiniciar={() => dispatch({ type: 'RESET' })}
       />
     );
   }
 
   return (
-    <div style={{ display: 'flex', gap: 24, padding: 24, fontFamily: 'sans-serif' }}>
+    <div style={{ display: 'flex', gap: 24, padding: 24 }}>
       <div style={{ flex: 1 }}>
         {state.fase === 'TURNO' && (
           <>
