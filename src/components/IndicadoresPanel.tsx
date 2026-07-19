@@ -15,7 +15,7 @@ interface Props {
 
 function Fila({ label, value }: { label: string; value: number | string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16 }}>
       <span>{label}</span>
       <strong>{typeof value === 'number' ? value.toFixed(2) : value}</strong>
     </div>
@@ -24,8 +24,8 @@ function Fila({ label, value }: { label: string; value: number | string }) {
 
 export function IndicadoresPanel({ state }: Props) {
   return (
-    <div style={{ border: '1px solid #444', borderRadius: 8, padding: 16, maxWidth: 320 }}>
-      <h4>Turno {state.turno} / 12</h4>
+    <div style={{ border: '1px solid #444', borderRadius: 8, padding: 16, maxWidth: 400}}>
+      <h4>Mes {state.turno} / 12</h4>
 
       <h5>Derivados</h5>
       <Fila label="Apoyo Popular" value={apoyoPopular(state)} />
@@ -33,7 +33,6 @@ export function IndicadoresPanel({ state }: Props) {
       <Fila label="Tensión Militar" value={tensionMilitar(state)} />
       <Fila label="Fuerza Oposición" value={fuerzaOposicion(state)} />
       <Fila label="Polarización" value={polarizacion(state)} />
-      <Fila label="Riesgo Fractura Partido" value={riesgoFracturaPartido(state)} />
       <Fila label="Riesgo Paramilitar" value={riesgoParamilitar(state)} />
 
       <h5>Encuestas</h5>
@@ -44,6 +43,7 @@ export function IndicadoresPanel({ state }: Props) {
 
       <h5>Partido</h5>
       <Fila label="Cohesión" value={state.partido.cohesionPartidaria} />
+      <Fila label="Riesgo Fractura Partido" value={riesgoFracturaPartido(state)} />
       <Fila label="Presupuesto" value={state.partido.presupuestoPartido} />
       <Fila label="Militarización MIR" value={state.partido.militarizacionMIR} />
 

@@ -18,13 +18,13 @@ export function ManoActual({ mano, cartaSeleccionada, onSeleccionar }: Props) {
             key={carta.id}
             onClick={() => onSeleccionar(carta)}
             style={{
-              width: 140,
-              height: 100,
+              width: 120,
+              height: 200,
               border: activa ? '2px solid #c00' : '1px solid #555',
               borderRadius: 8,
               background: carta.tipo === 'partido' ? '#fdf3e7' : '#e7f0fd',
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 16,
               padding: 6,
             }}
           >

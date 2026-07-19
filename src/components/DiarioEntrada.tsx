@@ -24,7 +24,7 @@ export function DiarioEntrada({ titulo, descripcion, etiqueta, colorAcento, opci
     >
       <div
         style={{
-          fontSize: 13,
+          fontSize: 14,
           letterSpacing: 2,
           textTransform: 'uppercase',
           color: colorAcento,
@@ -45,7 +45,7 @@ export function DiarioEntrada({ titulo, descripcion, etiqueta, colorAcento, opci
         {titulo}
       </h2>
 
-      <p style={{ fontSize: 18, lineHeight: 1.65, fontStyle: 'italic', marginBottom: 30 }}>{descripcion}</p>
+      <p style={{ fontSize: 18, lineHeight: 1.65, marginBottom: 30 }}>{descripcion}</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {opciones.map((opcion, i) => (
@@ -55,7 +55,7 @@ export function DiarioEntrada({ titulo, descripcion, etiqueta, colorAcento, opci
             style={{
               width: '100%',
               padding: '14px 16px',
-              fontSize: 17,
+              fontSize: 18,
               borderRadius: 6,
               border: `1px solid ${colorAcento}`,
               background: '#fff',

@@ -67,7 +67,7 @@ function App() {
                 <DiarioEntrada
                   titulo={state.cartaSeleccionada.titulo}
                   descripcion={state.cartaSeleccionada.descripcion}
-                  etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Memoria de Partido' : 'Memoria de Gobierno'}
+                  etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Oficinas del Partido' : 'La Moneda'}
                   colorAcento={state.cartaSeleccionada.tipo === 'partido' ? '#8a6d3b' : '#2980b9'}
                   opciones={state.cartaSeleccionada.opciones}
                   onElegir={jugarOpcion}
@@ -89,7 +89,7 @@ function App() {
             <DiarioEntrada
               titulo={state.eventoSeleccionado.titulo}
               descripcion={state.eventoSeleccionado.descripcion}
-              etiqueta="Suceso del mes"
+              etiqueta="NOTICIAS | EL NACIONAL"
               colorAcento="#c0392b"
               opciones={state.eventoSeleccionado.opciones}
               onElegir={jugarEvento}

@@ -11,8 +11,8 @@ export function DeckPila({ titulo, cartasRestantes, disabled, onClick }: Props) 
       onClick={onClick}
       disabled={disabled}
       style={{
-        width: 140,
-        height: 100,
+        width: 120,
+        height: 200,
         border: '1px solid #555',
         borderRadius: 8,
         background: disabled ? '#eee' : '#f5f5f5',
@@ -21,7 +21,7 @@ export function DeckPila({ titulo, cartasRestantes, disabled, onClick }: Props) 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 4,
+        gap: 5,
       }}
     >
       <strong>{titulo}</strong>
