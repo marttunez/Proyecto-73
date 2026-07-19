@@ -19,6 +19,7 @@ export const cartasPartido: Carta[] = [
           'partido.registradosMIR': 1500,
           'pais.presupuestoNacional': 2,
         },
+        resultado: null
       },
       {
         texto: 'Negociar con la DC',
@@ -29,6 +30,7 @@ export const cartasPartido: Carta[] = [
           'partido.militarizacionMIR': 1,
           'pais.presupuestoNacional': -1,
         },
+        resultado: undefined
       },
     ],
   },
@@ -47,6 +49,7 @@ export const cartasPartido: Carta[] = [
           'opp.relacionesDC': 1,
           'polls.up': 2,
         },
+        resultado: undefined
       },
       {
         texto: 'Favorecer ala radical',
@@ -57,6 +60,7 @@ export const cartasPartido: Carta[] = [
           'polls.up': 0.5,
           'ffaa.lealtadEjercito': -5,
         },
+        resultado: undefined
       },
     ],
   },
@@ -75,6 +79,7 @@ export const cartasPartido: Carta[] = [
           'ffaa.lealtadEjercito': -10,
           'opp.militarizacionPyL': 1,
         },
+        resultado: undefined
       },
       {
         texto: 'Contener e institucionalizar',
@@ -84,6 +89,7 @@ export const cartasPartido: Carta[] = [
           'pais.desempleo': 0.3,
           'partido.presupuestoPartido': -1,
         },
+        resultado: undefined
       },
     ],
   },
@@ -101,6 +107,7 @@ export const cartasPartido: Carta[] = [
           'polls.up': 2,
           'partido.cohesionPartidaria': 1,
         },
+        resultado: undefined
       },
       {
         texto: 'Guardar recursos para el mes de la elección',
@@ -109,6 +116,7 @@ export const cartasPartido: Carta[] = [
           'partido.presupuestoPartido': 1,
           'polls.up': -0.5,
         },
+        resultado: undefined
       },
     ],
   },

@@ -4,27 +4,61 @@ export const eventos: Evento[] = [
   {
     id: 'paro_camioneros',
     titulo: 'Paro de Camioneros',
-    descripcion: 'El gremio de camioneros ha amenazdo al Ministro de Transporte con un paro nacional si las condiciones de los transportistas no son aceptadas. Una paralización de este tipo podría afectar la distribución de alimentos y productos a lo largo de todo el país. Sectores moderados dentro del gobierno solicitan discutir las demandas mientras que los aliados de Altamirano llaman a "reprimir a los golpistas"',
+    descripcion: 'Gremios de transporte amenazan con paralizar el país.',
     opciones: [
       {
-        texto: 'Ordenar al Ministerio de Transporte abrir mesas de diálogo con los camioneros',
+        texto: 'Negociar concesiones',
         intensidad: 2,
         efectos: {
           'pais.presupuestoNacional': -1,
-          'polls.dc': 0.5,
+          'polls.dc': -0.5,
           'opp.relacionesPN': 0.5,
-          'partido.cohesionPartidaria': -1,
+        },
+        // Ejemplo de resultado CONDICIONAL: el texto cambia según cómo
+        // quedó el presupuesto nacional tras aplicar los efectos.
+        resultado: {
+          texto: (s) => s.pais.presupuestoNacional < 2
+            ? 'Las arcas fiscales quedan exhaustas tras la negociación, pero el paro se levanta sin mayores incidentes.'
+            : 'El paro se levanta tras una negociación que deja satisfechos a ambos lados, sin comprometer mayormente las finanzas públicas.',
+          preguntaSiguiente: null,
+          siguientesOpciones: undefined
         },
       },
       {
-        texto: 'Ordenar a Carabineros y Militares reprimir el paro de camioneros',
+        texto: 'Militarizar rutas',
         intensidad: 7,
         efectos: {
-          'ffaa.lealtadEjercito': -5,
-          'ffaa.lealtadCarabineros': -15,
+          'ffaa.lealtadEjercito': -2,
           'polls.up': -1,
-          'partido.registradosMIR': 1000,
           'opp.militarizacionPyL': 1,
+        },
+        // Ejemplo de resultado que ADEMÁS abre una nueva decisión anidada,
+        // dentro del mismo evento, dependiendo de la lealtad del Ejército.
+        resultado: {
+          texto: (s) =>
+            s.ffaa.lealtadEjercito < 60
+              ? 'Los oficiales a cargo cumplen la orden a regañadientes. Circulan rumores de descontento en los cuarteles.'
+              : 'Las tropas despliegan sin mayores objeciones y las rutas se despejan en 48 horas.',
+          preguntaSiguiente: '¿Cómo manejas el malestar en la oficialidad?',
+          siguientesOpciones: [
+            {
+              texto: 'Ofrecer garantías públicas a la oficialidad',
+              intensidad: 1,
+              efectos: { 'ffaa.lealtadEjercito': 1.5 },
+              resultado: {
+                texto: 'El gesto calma parcialmente los ánimos castrenses. Los cuarteles vuelven a la rutina.',
+              },
+            },
+            {
+              texto: 'Ignorar el malestar y seguir adelante',
+              intensidad: 5,
+              efectos: { 'partido.militarizacionMIR': 1 },
+              resultado: {
+                texto:
+                  'El malestar queda latente. El MIR interpreta la señal como luz verde para organizarse con mayor autonomía.',
+              },
+            },
+          ],
         },
       },
     ],
@@ -43,6 +77,7 @@ export const eventos: Evento[] = [
           'opp.militarizacionPyL': 1,
           'polls.dc': 0.3,
         },
+        resultado: undefined
       },
       {
         texto: 'Ordenar a Carabineros reprimer la manifestación',
@@ -56,6 +91,7 @@ export const eventos: Evento[] = [
           'opp.relacionesDC': -1,
           'opp.militarizacionPyL': 2,
         },
+        resultado: undefined
       },
     ],
   },
@@ -72,6 +108,7 @@ export const eventos: Evento[] = [
           'polls.up': 2.5,
           'opp.relacionesDC': -1,
         },
+        resultado: undefined
       },
       {
         texto: 'No intervenir',
@@ -80,6 +117,7 @@ export const eventos: Evento[] = [
           'partido.cohesionPartidaria': -1,
           'polls.up': -0.3,
         },
+        resultado: undefined
       },
     ],
   },
@@ -96,6 +134,7 @@ export const eventos: Evento[] = [
           'ffaa.lealtadAerea': -5,
           'polls.up': 1.5,
         },
+        resultado: undefined
       },
       {
         texto: 'Ignorar el rumor para no generar más tensión',
@@ -104,6 +143,7 @@ export const eventos: Evento[] = [
           'ffaa.lealtadEjercito': -1,
           'partido.militarizacionMIR': 1,
         },
+        resultado: undefined
       },
     ],
   },
@@ -120,6 +160,7 @@ export const eventos: Evento[] = [
           'opp.relacionesPN': -1,
           'pais.presupuestoNacional': -1,
         },
+        resultado: undefined
       },
       {
         texto: 'Ordenar el desalojo',
@@ -130,6 +171,7 @@ export const eventos: Evento[] = [
           'polls.dc': 0.3,
           'pais.presupuestoNacional': 1,
         },
+        resultado: undefined
       },
     ],
   },

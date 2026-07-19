@@ -26,10 +26,13 @@ export interface AppState {
   mazoGobierno: Mazo<Carta>;
   mazoEventos: Mazo<Evento>;
   mano: Carta[]; // PERSISTENTE: se acumula turno a turno, solo se quita la carta jugada
-  robosRestantes: number; // se reinicia a ROBOS_MAX_POR_TURNO cada turno
-  cartaSeleccionada: Carta | null; // carta "abierta" como diario, mostrando sus opciones
+  robosRestantes: number;
+  cartaSeleccionada: Carta | null;
   eventosPendientes: Evento[]; // eventos de este turno aún no resueltos (aparecen minimizados)
-  eventoSeleccionado: Evento | null; // evento "abierto" como diario, mostrando sus opciones
+  eventoSeleccionado: Evento | null; // evento "abierto" como diario
+  eventoOpcionesActuales: Opcion[] | null; // opciones visibles ahora (top-level o anidadas). null = ya no hay más, mostrar "Continuar"
+  eventoResultado: string | null; // texto de la última opción elegida, o null si aún no se elige ninguna
+  eventoPregunta: string | null; // prompt breve mostrado sobre las opciones anidadas, si la hay
   resultadoFinal: {
     escanos: AsientoPartido[];
     resultado: ResultadoElectoral;
@@ -43,6 +46,9 @@ function iniciarTurno(state: AppState): AppState {
     robosRestantes: ROBOS_MAX_POR_TURNO,
     cartaSeleccionada: null,
     eventoSeleccionado: null,
+    eventoOpcionesActuales: null,
+    eventoResultado: null,
+    eventoPregunta: null,
     fase: 'TURNO',
   };
 }
@@ -59,6 +65,9 @@ export function crearAppStateInicial(): AppState {
     cartaSeleccionada: null,
     eventosPendientes: [],
     eventoSeleccionado: null,
+    eventoOpcionesActuales: null,
+    eventoResultado: null,
+    eventoPregunta: null,
     resultadoFinal: null,
   };
   return iniciarTurno(base);
@@ -69,8 +78,11 @@ export type AppAction =
   | { type: 'SELECCIONAR_CARTA'; carta: Carta }
   | { type: 'JUGAR_OPCION'; opcion: Opcion }
   | { type: 'SELECCIONAR_EVENTO'; evento: Evento }
-  | { type: 'JUGAR_EVENTO'; opcion: Opcion }
+  | { type: 'ELEGIR_OPCION_EVENTO'; opcion: Opcion }
+  | { type: 'CONTINUAR_EVENTO' }
   | { type: 'RESET' };
+
+const TEXTO_RESULTADO_POR_DEFECTO = 'La decisión fue tomada. Sus efectos ya se dejan sentir en el país.';
 
 function finalizarPartida(game: GameState): AppState['resultadoFinal'] {
   const escanos = calcularParlamento(game.polls);
@@ -118,7 +130,6 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       const cartaJugada = state.cartaSeleccionada;
       const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion);
 
-      // Solo se descarta la carta JUGADA. Las demás cartas en mano persisten para el próximo turno.
       const nuevaMano = state.mano.filter((c) => c.id !== cartaJugada.id);
       const mazoPartido =
         cartaJugada.tipo === 'partido' ? descartar(state.mazoPartido, [cartaJugada]) : state.mazoPartido;
@@ -137,6 +148,9 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         mazoEventos,
         cartaSeleccionada: null,
         eventoSeleccionado: null,
+        eventoOpcionesActuales: null,
+        eventoResultado: null,
+        eventoPregunta: null,
         eventosPendientes,
         fase: eventosPendientes.length > 0 ? 'EVENTO' : 'TURNO',
       };
@@ -145,31 +159,78 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'SELECCIONAR_EVENTO': {
       if (state.fase !== 'EVENTO') return state;
       const yaSeleccionado = state.eventoSeleccionado?.id === action.evento.id;
-      return { ...state, eventoSeleccionado: yaSeleccionado ? null : action.evento };
+      if (yaSeleccionado) {
+        return {
+          ...state,
+          eventoSeleccionado: null,
+          eventoOpcionesActuales: null,
+          eventoResultado: null,
+          eventoPregunta: null,
+        };
+      }
+      return {
+        ...state,
+        eventoSeleccionado: action.evento,
+        eventoOpcionesActuales: action.evento.opciones,
+        eventoResultado: null,
+        eventoPregunta: null,
+      };
     }
 
-    case 'JUGAR_EVENTO': {
-      if (state.fase !== 'EVENTO' || !state.eventoSeleccionado) return state;
+    // Elige una opción DENTRO del evento abierto (top-level o anidada). NO cierra
+    // el evento: aplica los efectos, calcula el texto de continuación (fijo o
+    // dependiente del GameState resultante), y si la opción trae
+    // 'siguientesOpciones', esas pasan a ser las nuevas opciones visibles.
+    case 'ELEGIR_OPCION_EVENTO': {
+      if (state.fase !== 'EVENTO' || !state.eventoSeleccionado || !state.eventoOpcionesActuales) return state;
 
-      const eventoResuelto = state.eventoSeleccionado;
       const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion);
+
+      const resultado = action.opcion.resultado;
+      const textoResultado = resultado
+        ? typeof resultado.texto === 'function'
+          ? resultado.texto(nuevoGame)
+          : resultado.texto
+        : TEXTO_RESULTADO_POR_DEFECTO;
+
+      const siguientesOpciones =
+        resultado?.siguientesOpciones && resultado.siguientesOpciones.length > 0
+          ? resultado.siguientesOpciones
+          : null;
+
+      return {
+        ...state,
+        game: nuevoGame,
+        eventoResultado: textoResultado,
+        eventoOpcionesActuales: siguientesOpciones,
+        eventoPregunta: siguientesOpciones ? resultado?.preguntaSiguiente ?? null : null,
+      };
+    }
+
+    // Solo se puede invocar cuando ya no quedan más opciones dentro del evento
+    // (eventoOpcionesActuales === null). Aquí recién se descarta el evento,
+    // se revisan eventos restantes del turno, y se avanza turno si corresponde.
+    case 'CONTINUAR_EVENTO': {
+      if (state.fase !== 'EVENTO' || !state.eventoSeleccionado) return state;
+      if (state.eventoOpcionesActuales) return state; // aún quedan decisiones por resolver
+      const eventoResuelto = state.eventoSeleccionado;
       const restantes = state.eventosPendientes.filter((e) => e.id !== eventoResuelto.id);
       const mazoEventos = descartar(state.mazoEventos, [eventoResuelto]);
 
-      // Aún quedan eventos de este turno por resolver: vuelven a aparecer
-      // minimizados (el jugador elige cuál abrir a continuación).
       if (restantes.length > 0) {
         return {
           ...state,
-          game: nuevoGame,
           eventosPendientes: restantes,
           eventoSeleccionado: null,
+          eventoOpcionesActuales: null,
+          eventoResultado: null,
+          eventoPregunta: null,
           mazoEventos,
         };
       }
 
-      const turnoSiguiente = nuevoGame.turno + 1;
-      const gameConTurno = { ...nuevoGame, turno: turnoSiguiente };
+      const turnoSiguiente = state.game.turno + 1;
+      const gameConTurno = { ...state.game, turno: turnoSiguiente };
 
       if (turnoSiguiente > TOTAL_TURNOS) {
         return {
@@ -178,6 +239,9 @@ export function appReducer(state: AppState, action: AppAction): AppState {
           mazoEventos,
           eventosPendientes: [],
           eventoSeleccionado: null,
+          eventoOpcionesActuales: null,
+          eventoResultado: null,
+          eventoPregunta: null,
           fase: 'FIN',
           resultadoFinal: finalizarPartida(gameConTurno),
         };

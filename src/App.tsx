@@ -3,6 +3,7 @@ import { appReducer, crearAppStateInicial } from './model/appState';
 import { DeckPila } from './components/DeckPila';
 import { ManoActual } from './components/ManoActual';
 import { DiarioEntrada } from './components/DiarioEntrada';
+import { DiarioEvento } from './components/DiarioEvento';
 import { DiarioModal } from './components/DiarioModal';
 import { EventosMinimizados } from './components/EventoMinimizado';
 import { IndicadoresPanel } from './components/IndicadoresPanel';
@@ -16,8 +17,12 @@ function App() {
     dispatch({ type: 'JUGAR_OPCION', opcion });
   }
 
-  function jugarEvento(opcion: Opcion) {
-    dispatch({ type: 'JUGAR_EVENTO', opcion });
+  function elegirOpcionEvento(opcion: Opcion) {
+    dispatch({ type: 'ELEGIR_OPCION_EVENTO', opcion });
+  }
+
+  function continuarEvento() {
+    dispatch({ type: 'CONTINUAR_EVENTO' });
   }
 
   if (state.fase === 'FIN' && state.resultadoFinal) {
@@ -67,7 +72,7 @@ function App() {
                 <DiarioEntrada
                   titulo={state.cartaSeleccionada.titulo}
                   descripcion={state.cartaSeleccionada.descripcion}
-                  etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Oficinas del Partido' : 'La Moneda'}
+                  etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Memoria de Partido' : 'Memoria de Gobierno'}
                   colorAcento={state.cartaSeleccionada.tipo === 'partido' ? '#8a6d3b' : '#2980b9'}
                   opciones={state.cartaSeleccionada.opciones}
                   onElegir={jugarOpcion}
@@ -86,13 +91,13 @@ function App() {
 
         {state.fase === 'EVENTO' && state.eventoSeleccionado && (
           <DiarioModal>
-            <DiarioEntrada
-              titulo={state.eventoSeleccionado.titulo}
-              descripcion={state.eventoSeleccionado.descripcion}
-              etiqueta="NOTICIAS | EL NACIONAL"
-              colorAcento="#c0392b"
-              opciones={state.eventoSeleccionado.opciones}
-              onElegir={jugarEvento}
+            <DiarioEvento
+              evento={state.eventoSeleccionado}
+              opcionesActuales={state.eventoOpcionesActuales}
+              resultado={state.eventoResultado}
+              pregunta={state.eventoPregunta}
+              onDecidir={elegirOpcionEvento}
+              onContinuar={continuarEvento}
             />
           </DiarioModal>
         )}

@@ -1,17 +1,26 @@
 import type { Effects } from './effects';
 import type { GameState } from './types';
 
+
+/**
+ * Creamos una interfaz para poder tener la opción de continuidad en los eventos
+ */
+export interface ResultadoOpcion {
+  preguntaSiguiente: string | null;
+  siguientesOpciones: any;
+  texto: string | ((s: GameState) => string);
+  pregunta?: string;
+  opciones?: Opcion[];
+}
+
 export interface Opcion {
   texto: string;
   requisito?: (s: GameState) => boolean;
   efectos: Effects;
-  /**
-   * Qué tan controversial/drástica es esta decisión, de 0 (moderada, de consenso)
-   * a 10 (muy radical/polarizante). Si se omite, se asume INTENSIDAD_POR_DEFECTO
-   * (ver pollDynamics.ts). Este valor escala cuánto empuja la decisión el
-   * desgaste ambiental de encuestas hacia la oposición.
-   */
   intensidad?: number;
+
+  resultado: ResultadoOpcion | null | undefined;
+
 }
 
 export type TipoCarta = 'partido' | 'gobierno';
