@@ -1,32 +1,25 @@
-# React + TypeScript + Vite
+# La Vía Chilena al ??? 
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Este es mi primer intento de un juego de gestión política por turnos donde el jugador debe encarnar el
+Gobierno de Salvador Allende y navegar los complicados años 70's, mediando entre los sectores radicales
+del partido y una fiera oposición... sin olvidar a los las fuerzas armadas y de Orden.
 
-Currently, two official plugins are available:
+## Sobre el código (stack como dicen los nerds)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- La mayor parte del código está escrito en TypeScript, esto pues es lo más cercano que pude encontrar a
+Scala que Visual Studio Code no necesitara mil maestrías para entender.
 
-## React Compiler
+- Acutalmente se necesita de TypeScript + React para poder correr el juego (esta combinación genera un
+servidor local). Espero que esto sea momentaeneo mientras avanzo.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Una parte considerable del juego fue vibecodeada o arreglada por claude ups...
 
-## Expanding the Oxlint configuration
+## Sobre el juego
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- Auto explicatorio, 12 turnos, cada uno es un mes y debes intentar ganar las elecciones de 1973.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+- Faltan muchas cosas que implementar, como golpes de estados, guerra civil, continuidad de decisiones etc etc etc
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Miscelaneos
+
+- No tengo un autocorrector en VSCode, por lo cual pueden haber MUCHOS typos.
