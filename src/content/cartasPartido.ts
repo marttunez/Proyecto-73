@@ -14,17 +14,18 @@ export const cartasPartido: Carta[] = [
           'polls.up': 2.0,
           'opp.relacionesDC': -1,
           'opp.relacionesPN': -2,
-          'ffaa.lealtadEjercito': -1.5,
-          'pais.inflacion': 0.3,
+          'ffaa.lealtadEjercito': -2.5,
+          'pais.inflacion': 0.5,
           'partido.registradosMIR': 1500,
+          'pais.presupuestoNacional': 2,
         },
       },
       {
         texto: 'Negociar con la DC',
         intensidad: 1, // moderada: busca consenso institucional
         efectos: {
-          'polls.dc': 1,
-          'partido.cohesionPartidaria': -3,
+          'polls.dc': 0.3,
+          'partido.cohesionPartidaria': -5,
           'partido.militarizacionMIR': 1,
           'pais.presupuestoNacional': -1,
         },
@@ -41,10 +42,10 @@ export const cartasPartido: Carta[] = [
         texto: 'Favorecer ala moderada',
         intensidad: 1,
         efectos: {
-          'partido.cohesionPartidaria': 4,
+          'partido.cohesionPartidaria': 0.5,
           'partido.militarizacionMIR': -1,
           'opp.relacionesDC': 1,
-          'polls.up': -0.5,
+          'polls.up': 2,
         },
       },
       {
@@ -53,8 +54,8 @@ export const cartasPartido: Carta[] = [
         efectos: {
           'partido.militarizacionMIR': 2,
           'partido.registradosMIR': 2000,
-          'polls.up': 1,
-          'ffaa.lealtadEjercito': -1,
+          'polls.up': 0.5,
+          'ffaa.lealtadEjercito': -5,
         },
       },
     ],
@@ -69,9 +70,9 @@ export const cartasPartido: Carta[] = [
         texto: 'Apoyar y armar los cordones',
         intensidad: 9, // muy radical: paralelismo armado al margen del Estado
         efectos: {
-          'polls.up': 1.5,
+          'polls.up': 2.5,
           'partido.militarizacionMIR': 2,
-          'ffaa.lealtadEjercito': -2,
+          'ffaa.lealtadEjercito': -10,
           'opp.militarizacionPyL': 1,
         },
       },
@@ -79,8 +80,8 @@ export const cartasPartido: Carta[] = [
         texto: 'Contener e institucionalizar',
         intensidad: 2,
         efectos: {
-          'partido.cohesionPartidaria': -2,
-          'pais.desempleo': -0.3,
+          'partido.cohesionPartidaria': -3,
+          'pais.desempleo': 0.3,
           'partido.presupuestoPartido': -1,
         },
       },

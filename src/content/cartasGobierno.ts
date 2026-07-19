@@ -11,19 +11,19 @@ export const cartasGobierno: Carta[] = [
         texto: 'Fijar precios por decreto',
         intensidad: 4,
         efectos: {
-          'pais.inflacion': -1.2,
+          'pais.inflacion': 5.5,
           'pais.presupuestoNacional': -1,
           'opp.relacionesPN': -1,
-          'polls.up': 0.5,
+          'polls.up': 1,
         },
       },
       {
         texto: 'Dejar el mercado libre',
         intensidad: 2,
         efectos: {
-          'pais.inflacion': 0.8,
+          'pais.inflacion': -1.5,
           'polls.dc': 0.5,
-          'pais.desempleo': -0.2,
+          'pais.desempleo': 1.5,
         },
       },
     ],
@@ -38,10 +38,10 @@ export const cartasGobierno: Carta[] = [
         texto: 'Nacionalizar sin compensación',
         intensidad: 7, // choca directo con EE.UU. y la Armada
         efectos: {
-          'polls.up': 3,
-          'ffaa.lealtadArmada': -1.5,
+          'polls.up': 5,
+          'ffaa.lealtadArmada': -5,
           'opp.relacionesPN': -1,
-          'pais.presupuestoNacional': 1,
+          'pais.presupuestoNacional': 2,
         },
       },
       {
@@ -65,18 +65,18 @@ export const cartasGobierno: Carta[] = [
         texto: 'Nombrar generales en el gabinete',
         intensidad: 5,
         efectos: {
-          'ffaa.lealtadEjercito': 3,
+          'ffaa.lealtadEjercito': 2,
           'ffaa.lealtadAerea': 2,
-          'polls.up': -1,
-          'partido.cohesionPartidaria': -1,
+          'polls.up': -0.5,
+          'partido.cohesionPartidaria': -5,
         },
       },
       {
         texto: 'Mantener gabinete civil',
         intensidad: 1,
         efectos: {
-          'partido.cohesionPartidaria': 1,
-          'ffaa.lealtadEjercito': -1,
+          'partido.cohesionPartidaria': 3,
+          'ffaa.lealtadEjercito': -4,
         },
       },
     ],
@@ -91,17 +91,17 @@ export const cartasGobierno: Carta[] = [
         texto: 'Implementar Juntas de Abastecimiento (JAP)',
         intensidad: 6, // muy polémico para la clase media
         efectos: {
-          'polls.up': 1,
+          'polls.up': 3,
           'opp.relacionesDC': -2,
           'partido.militarizacionMIR': 1,
-          'pais.desempleo': -0.2,
+          'pais.desempleo': 1,
         },
       },
       {
         texto: 'Liberalizar la distribución',
         intensidad: 2,
         efectos: {
-          'pais.inflacion': 0.5,
+          'pais.inflacion': -0.5,
           'opp.relacionesDC': 1,
           'polls.dc': 0.5,
         },
