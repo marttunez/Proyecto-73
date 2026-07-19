@@ -2,6 +2,37 @@ import type { Carta } from '../model/contentTypes';
 
 export const cartasGobierno: Carta[] = [
   {
+    id: 'indultar_miristas',
+    tipo: 'gobierno',
+    titulo: 'Indultar Miristas',
+    descripcion: 'Se debate sobre el indulto de los miembros del MIR.',
+    opciones: [
+      {
+        texto: 'Indultar completamente a todos los miristas',
+        intensidad: 4,
+        efectos: {
+          'partido.cohesionPartidaria': 5,
+          'polls.up': -1.5,
+          'opp.relacionesDC': -1,
+          'opp.relacionesPN': -1,
+          'ffaa.lealtadAerea': -2,
+          'ffaa.lealtadArmada': -3,
+          'ffaa.lealtadEjercito': -5,
+          'ffaa.lealtadCarabineros': -5,
+        },
+      },
+      {
+        texto: 'Denegar los indultos y mantener la represión',
+        intensidad: 2,
+        efectos: {
+          'partido.cohesionPartidaria': -5,
+          'partido.militarizacionMIR': 1,
+          'polls.up': 0.5,
+        },
+      },
+    ],
+  },
+  {
     id: 'control_precios',
     tipo: 'gobierno',
     titulo: 'Control de Precios',
@@ -39,7 +70,9 @@ export const cartasGobierno: Carta[] = [
         intensidad: 7, // choca directo con EE.UU. y la Armada
         efectos: {
           'polls.up': 5,
+          'ffaa.lealtadAerea': -5,
           'ffaa.lealtadArmada': -5,
+          'ffaa.lealtadEjercito': -10,
           'opp.relacionesPN': -1,
           'pais.presupuestoNacional': 2,
         },

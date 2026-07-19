@@ -2,8 +2,9 @@ import { useReducer } from 'react';
 import { appReducer, crearAppStateInicial } from './model/appState';
 import { DeckPila } from './components/DeckPila';
 import { ManoActual } from './components/ManoActual';
-import { OpcionesCarta } from './components/OpcionesCarta';
-import { EventoView } from './components/EventoView';
+import { DiarioEntrada } from './components/DiarioEntrada';
+import { DiarioModal } from './components/DiarioModal';
+import { EventosMinimizados } from './components/EventoMinimizado';
 import { IndicadoresPanel } from './components/IndicadoresPanel';
 import { ParlamentoView } from './components/ParlamentoView';
 import type { Opcion } from './model/contentTypes';
@@ -31,7 +32,7 @@ function App() {
 
   return (
     <div style={{ display: 'flex', gap: 24, padding: 24 }}>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {state.fase === 'TURNO' && (
           <>
             <p>
@@ -54,7 +55,7 @@ function App() {
               />
             </div>
 
-            <h4 style={{ marginTop: 24 }}>Mano — clic para jugar</h4>
+            <h4 style={{ marginTop: 24 }}>Mano — clic para abrir</h4>
             <ManoActual
               mano={state.mano}
               cartaSeleccionada={state.cartaSeleccionada}
@@ -62,13 +63,38 @@ function App() {
             />
 
             {state.cartaSeleccionada && (
-              <OpcionesCarta carta={state.cartaSeleccionada} onElegir={jugarOpcion} />
+              <DiarioModal>
+                <DiarioEntrada
+                  titulo={state.cartaSeleccionada.titulo}
+                  descripcion={state.cartaSeleccionada.descripcion}
+                  etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Memoria de Partido' : 'Memoria de Gobierno'}
+                  colorAcento={state.cartaSeleccionada.tipo === 'partido' ? '#8a6d3b' : '#2980b9'}
+                  opciones={state.cartaSeleccionada.opciones}
+                  onElegir={jugarOpcion}
+                />
+              </DiarioModal>
             )}
           </>
         )}
 
-        {state.fase === 'EVENTO' && state.eventosPendientes[0] && (
-          <EventoView evento={state.eventosPendientes[0]} onDecidir={jugarEvento} />
+        {state.fase === 'EVENTO' && !state.eventoSeleccionado && (
+          <EventosMinimizados
+            eventos={state.eventosPendientes}
+            onSeleccionar={(evento) => dispatch({ type: 'SELECCIONAR_EVENTO', evento })}
+          />
+        )}
+
+        {state.fase === 'EVENTO' && state.eventoSeleccionado && (
+          <DiarioModal>
+            <DiarioEntrada
+              titulo={state.eventoSeleccionado.titulo}
+              descripcion={state.eventoSeleccionado.descripcion}
+              etiqueta="Suceso del mes"
+              colorAcento="#c0392b"
+              opciones={state.eventoSeleccionado.opciones}
+              onElegir={jugarEvento}
+            />
+          </DiarioModal>
         )}
       </div>
 

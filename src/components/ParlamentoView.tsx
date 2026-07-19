@@ -1,4 +1,4 @@
-import { type AsientoPartido, type ResultadoElectoral, ESCANOS_PARA_VICTORIA, ESCANOS_PARA_DERROTA } from '../model/parlamento';
+import { type AsientoPartido, type ResultadoElectoral} from '../model/parlamento';
 
 interface Props {
   escanos: AsientoPartido[];
@@ -42,10 +42,7 @@ export function ParlamentoView({ escanos, resultado, onReiniciar }: Props) {
   return (
     <div style={{ padding: 24, maxWidth: 720, margin: '0 auto' }}>
       <h2 style={{ textAlign: 'center' }}>Marzo de 1973 — Resultado Parlamentario</h2>
-      <p style={{ textAlign: 'center', fontSize: 16 }}>
-        Umbral de victoria: {ESCANOS_PARA_VICTORIA}+ escaños UP · Umbral de derrota: {ESCANOS_PARA_DERROTA}- escaños
-        UP
-      </p>
+
 
       <div
         style={{
