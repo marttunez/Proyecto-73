@@ -5,7 +5,7 @@ interface Props {
   onClick: () => void;
 }
 
-export function DeckPila({ titulo, cartasRestantes, disabled, onClick }: Props) {
+export function DeckPila({ titulo, disabled, onClick }: Props) {
   return (
     <button
       onClick={onClick}

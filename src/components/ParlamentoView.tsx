@@ -85,7 +85,9 @@ function asignarPartidosAHemiciclo(
 ): Array<AsientoPos & { partido: string }> {
   const ordenadas = [...posiciones].sort((a, b) => b.angulo - a.angulo); // PI -> 0, izquierda a derecha
 
-  const conteoPorPartido = new Map(escanos.map((e) => [e.partido, e.escanos]));
+  const conteoPorPartido = new Map<keyof typeof COLOR_PARTIDO, number>(
+    escanos.map((e) => [e.partido as keyof typeof COLOR_PARTIDO, e.escanos] as [keyof typeof COLOR_PARTIDO, number])
+  );
   const secuenciaPartidos: string[] = [];
   for (const partido of ORDEN_IZQUIERDA_DERECHA) {
     const cantidad = conteoPorPartido.get(partido) ?? 0;

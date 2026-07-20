@@ -22,6 +22,7 @@ export const cartasGobierno: Carta[] = [
           'partido.militarizacionMIR': 1,
           'opp.militarizacionPyL': 1,
         },
+        resultado: undefined
       },
       {
         texto: 'Denegar los indultos y mantenerse a margen de la violencia política',
@@ -32,6 +33,7 @@ export const cartasGobierno: Carta[] = [
           'polls.up': 1.5,
           'ffaa.lealtadCarabineros': 10,
         },
+        resultado: undefined
       },
     ],
   },
@@ -51,6 +53,7 @@ export const cartasGobierno: Carta[] = [
           'polls.up': 1,
           'ffaa.lealtadEjercito': 5,
         },
+        resultado: undefined
       },
       {
         texto: 'No hay nada que podamos hacer, la inflación es un fenómeno global',
@@ -61,6 +64,7 @@ export const cartasGobierno: Carta[] = [
           'pais.desempleo': 1.5,
           'partido.cohesionPartidaria': -5,
         },
+        resultado: undefined
       },
     ],
   },
@@ -81,6 +85,7 @@ export const cartasGobierno: Carta[] = [
           'opp.relacionesPN': -1,
           'pais.presupuestoNacional': 3,
         },
+        resultado: undefined
       },
       {
         texto: 'Compensar a las empresas',
@@ -90,6 +95,7 @@ export const cartasGobierno: Carta[] = [
           'opp.relacionesDC': 1,
           'ffaa.lealtadArmada': 0.5,
         },
+        resultado: undefined
       },
     ],
   },
@@ -109,6 +115,7 @@ export const cartasGobierno: Carta[] = [
           'partido.cohesionPartidaria': -5,
           'partido.militarizacionMIR': 1,
         },
+        resultado: undefined
       },
       {
         texto: 'Mantener un gabinete estrictamente civil',
@@ -117,6 +124,7 @@ export const cartasGobierno: Carta[] = [
           'partido.cohesionPartidaria': 3,
           'ffaa.lealtadEjercito': -4,
         },
+        resultado: undefined
       },
     ],
   },
@@ -135,6 +143,7 @@ export const cartasGobierno: Carta[] = [
           'partido.militarizacionMIR': 1,
           'pais.desempleo': 1,
         },
+        resultado: undefined
       },
       {
         texto: 'Liberalizar la distribución',
@@ -144,6 +153,7 @@ export const cartasGobierno: Carta[] = [
           'opp.relacionesDC': 1,
           'polls.dc': 0.5,
         },
+        resultado: undefined
       },
     ],
   },
