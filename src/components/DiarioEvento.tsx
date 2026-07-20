@@ -1,17 +1,20 @@
 import type {Evento, Opcion} from '../model/contentTypes';
+import { motivoNoFactible, opcionEsFactible } from '../model/factibilidad';
+import type { GameState } from '../model/types';
 
 interface Props {
     evento: Evento;
     opcionesActuales: Opcion[] | null;
     resultado: string | null;
     pregunta: string | null;
+    game: GameState
     onDecidir: (opcion: Opcion) => void;
     onContinuar: () => void;
 }
 
 const COLOR_ACENTO = '#c0392b';
 
-export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, onDecidir, onContinuar }: Props) {
+export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, game, onDecidir, onContinuar }: Props) {
   return (
     <div
       style={{
@@ -20,7 +23,7 @@ export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, on
         padding: '32px 40px',
         maxWidth: 560,
         width: '100%',
-        background: '#fdfaf3',
+        background: '#515151',
         boxShadow: '0 8px 28px rgba(0,0,0,0.25)',
       }}
     >
@@ -33,7 +36,7 @@ export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, on
           marginBottom: 8,
         }}
       >
-        Suceso del mes
+        Diario | el nacional
       </div>
  
       <h2
@@ -47,7 +50,7 @@ export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, on
         {evento.titulo}
       </h2>
  
-      <p style={{ fontSize: 18, lineHeight: 1.65, fontStyle: 'italic', marginBottom: resultado ? 20 : 30 }}>
+      <p style={{ fontSize: 18, lineHeight: 1.65, marginBottom: resultado ? 20 : 30 }}>
         {evento.descripcion}
       </p>
  
@@ -64,23 +67,34 @@ export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, on
  
       {opcionesActuales ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {opcionesActuales.map((opcion, i) => (
-            <button
-              key={i}
-              onClick={() => onDecidir(opcion)}
-              style={{
-                width: '100%',
-                padding: '14px 16px',
-                fontSize: 17,
-                borderRadius: 6,
-                border: `1px solid ${COLOR_ACENTO}`,
-                background: '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              {opcion.texto}
-            </button>
-          ))}
+          {opcionesActuales.map((opcion, i) => {
+            const factible = opcionEsFactible(opcion, game);
+            return (
+              <div key={i}>
+                <button
+                  onClick={() => factible && onDecidir(opcion)}
+                  disabled={!factible}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    fontSize: 17,
+                    borderRadius: 6,
+                    border: `1px solid ${factible ? COLOR_ACENTO : '#555'}`,
+                    background: factible ? '#fff' : '#e8e8e8',
+                    color: factible ? '#000' : '#888',
+                    cursor: factible ? 'pointer' : 'not-allowed',
+                  }}
+                >
+                  {opcion.texto}
+                </button>
+                {!factible && (
+                  <p style={{ fontSize: 12, color: '#c0392b', margin: '4px 2px 0' }}>
+                    {motivoNoFactible(opcion, game)}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       ) : (
         <button
@@ -102,3 +116,4 @@ export function DiarioEvento({ evento, opcionesActuales, resultado, pregunta, on
     </div>
   );
 }
+ 

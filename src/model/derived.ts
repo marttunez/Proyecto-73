@@ -8,11 +8,28 @@ export function apoyoPopular(s: GameState): number {
   return s.polls.up - 0.2 * tensionSocial(s);
 }
 
-export function tensionMilitar(s: GameState): number {
-  const promLealtad =
+export function tensionMilitar(s: GameState, prevState?: GameState): number {
+  const promLealtadActual =
     (s.ffaa.lealtadEjercito + s.ffaa.lealtadArmada + s.ffaa.lealtadAerea + s.ffaa.lealtadCarabineros) / 4.0;
+    
   const riesgoParamilitar = s.partido.militarizacionMIR + s.opp.militarizacionPyL;
-  return 100.0 - 0.5 * riesgoParamilitar - 0.75 * promLealtad - 0.1 * apoyoPopular(s);
+  
+  // 1. Calculamos la tensión base
+  let tension = 100.0 - 0.5 * riesgoParamilitar - 0.85 * promLealtadActual - 0.1 * apoyoPopular(s);
+
+  // 2. Si tenemos el estado anterior, aplicamos el impacto de la variación
+  if (prevState) {
+    const promLealtadAnterior =
+      (prevState.ffaa.lealtadEjercito + prevState.ffaa.lealtadArmada + prevState.ffaa.lealtadAerea + prevState.ffaa.lealtadCarabineros) / 4.0;
+      
+    // Si la lealtad bajó, la variación será negativa (ej. 45 - 50 = -5)
+    const variacionLealtad = promLealtadActual - promLealtadAnterior;
+    
+    // Multiplicamos por -0.5: un cambio de -5 sumará +2.5 a la tensión
+    tension -= variacionLealtad * 5.5; 
+  }
+
+  return tension;
 }
 
 // Fuerza electoral combinada de la oposición

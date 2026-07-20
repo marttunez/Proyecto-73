@@ -5,6 +5,7 @@ import { cartasPartido } from '../content/cartasPartido';
 import { cartasGobierno } from '../content/cartasGobierno';
 import { eventos as eventosData } from '../content/eventos';
 import { aplicarEfectosConDinamica } from './pollDynamics';
+import { generarNarrativa } from '../content/narrativas';
 import {
   type AsientoPartido,
   type ResultadoElectoral,
@@ -12,7 +13,8 @@ import {
   determinarResultado,
 } from './parlamento';
 
-export const ROBOS_MAX_POR_TURNO = 2;
+export const ROBOS_MAX_POR_TURNO = 3;
+export const LIMITE_MANO = 5; // máximo de cartas acumulables en mano a la vez
 export const EVENTOS_MIN = 1;
 export const EVENTOS_MAX = 2;
 export const TOTAL_TURNOS = 12;
@@ -33,6 +35,7 @@ export interface AppState {
   eventoOpcionesActuales: Opcion[] | null; // opciones visibles ahora (top-level o anidadas). null = ya no hay más, mostrar "Continuar"
   eventoResultado: string | null; // texto de la última opción elegida, o null si aún no se elige ninguna
   eventoPregunta: string | null; // prompt breve mostrado sobre las opciones anidadas, si la hay
+  narrativa: string; // texto de crónica del mes actual, mostrado en la parte superior
   resultadoFinal: {
     escanos: AsientoPartido[];
     resultado: ResultadoElectoral;
@@ -49,6 +52,7 @@ function iniciarTurno(state: AppState): AppState {
     eventoOpcionesActuales: null,
     eventoResultado: null,
     eventoPregunta: null,
+    narrativa: generarNarrativa(state.game.turno, state.game),
     fase: 'TURNO',
   };
 }
@@ -68,6 +72,7 @@ export function crearAppStateInicial(): AppState {
     eventoOpcionesActuales: null,
     eventoResultado: null,
     eventoPregunta: null,
+    narrativa: '',
     resultadoFinal: null,
   };
   return iniciarTurno(base);
@@ -96,6 +101,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'ROBAR_CARTA': {
       if (state.fase !== 'TURNO') return state;
       if (state.robosRestantes <= 0) return state;
+      if (state.mano.length >= LIMITE_MANO) return state;
 
       if (action.tipo === 'partido') {
         const { mano, mazo } = robar(state.mazoPartido, 1);
@@ -213,6 +219,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'CONTINUAR_EVENTO': {
       if (state.fase !== 'EVENTO' || !state.eventoSeleccionado) return state;
       if (state.eventoOpcionesActuales) return state; // aún quedan decisiones por resolver
+
       const eventoResuelto = state.eventoSeleccionado;
       const restantes = state.eventosPendientes.filter((e) => e.id !== eventoResuelto.id);
       const mazoEventos = descartar(state.mazoEventos, [eventoResuelto]);

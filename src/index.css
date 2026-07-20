@@ -1,7 +1,13 @@
 * {
   box-sizing: border-box;
 }
-
+ 
+body {
+  margin: 0;
+  background: #1b1b1b;
+  color: #e8e6e1;
+}
+ 
 body,
 button,
 input,
@@ -9,3 +15,4 @@ textarea,
 select {
   font-family: 'Times New Roman', Times, serif;
 }
+ 

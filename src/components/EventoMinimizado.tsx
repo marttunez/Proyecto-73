@@ -8,7 +8,7 @@ interface Props {
 export function EventosMinimizados({ eventos, onSeleccionar }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 420 }}>
-      <p style={{ fontStyle: 'italic', color: '#666', textAlign: 'center' }}>
+      <p style={{ color: '#cdcdcd', textAlign: 'center' }}>
         Sucesos pendientes este mes — elige uno para continuar:
       </p>
       {eventos.map((evento) => (
