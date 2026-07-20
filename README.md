@@ -1,4 +1,4 @@
-# La Vía Chilena al ??? 
+# La Vía Chilena al Socialismo 
 
 Este es mi primer intento de un juego de gestión política por turnos donde el jugador debe encarnar el
 Gobierno de Salvador Allende y navegar los complicados años 70's, mediando entre los sectores radicales
