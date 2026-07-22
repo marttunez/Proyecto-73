@@ -5,6 +5,7 @@ import { cartasPartido } from '../content/cartasPartido';
 import { cartasGobierno } from '../content/cartasGobierno';
 import { eventos as eventosData } from '../content/eventos';
 import { aplicarEfectosConDinamica } from './pollDynamics';
+import { opcionEsFactible } from './factibilidad';
 import { generarNarrativa } from '../content/narrativas';
 import {
   type AsientoPartido,
@@ -13,13 +14,22 @@ import {
   determinarResultado,
 } from './parlamento';
 
-export const ROBOS_MAX_POR_TURNO = 3;
+export const ROBOS_MAX_POR_TURNO = 2;
 export const LIMITE_MANO = 5; // máximo de cartas acumulables en mano a la vez
 export const EVENTOS_MIN = 1;
 export const EVENTOS_MAX = 2;
 export const TOTAL_TURNOS = 12;
 
 export type Fase = 'TURNO' | 'EVENTO' | 'FIN';
+
+export type TipoFin = 'eleccion' | 'golpe';
+
+export interface ResultadoFinal {
+  tipo: TipoFin;
+  resultado: ResultadoElectoral; // para 'golpe', siempre 'derrota'
+  escanos: AsientoPartido[] | null; // null cuando el fin fue por golpe (no hay elección)
+  mensaje?: string; // texto narrativo del final anticipado (solo 'golpe')
+}
 
 export interface AppState {
   game: GameState;
@@ -36,10 +46,7 @@ export interface AppState {
   eventoResultado: string | null; // texto de la última opción elegida, o null si aún no se elige ninguna
   eventoPregunta: string | null; // prompt breve mostrado sobre las opciones anidadas, si la hay
   narrativa: string; // texto de crónica del mes actual, mostrado en la parte superior
-  resultadoFinal: {
-    escanos: AsientoPartido[];
-    resultado: ResultadoElectoral;
-  } | null;
+  resultadoFinal: ResultadoFinal | null;
 }
 
 function iniciarTurno(state: AppState): AppState {
@@ -93,7 +100,11 @@ function finalizarPartida(game: GameState): AppState['resultadoFinal'] {
   const escanos = calcularParlamento(game.polls);
   const escanosUP = escanos.find((e) => e.partido === 'up')?.escanos ?? 0;
   const resultado = determinarResultado(escanosUP);
-  return { escanos, resultado };
+  return { tipo: 'eleccion', escanos, resultado };
+}
+
+function finalizarPorGolpe(mensaje: string): AppState['resultadoFinal'] {
+  return { tipo: 'golpe', resultado: 'derrota', escanos: null, mensaje };
 }
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -132,6 +143,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'JUGAR_OPCION': {
       if (state.fase !== 'TURNO' || !state.cartaSeleccionada) return state;
+      if (!opcionEsFactible(action.opcion, state.game)) return state;
 
       const cartaJugada = state.cartaSeleccionada;
       const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion);
@@ -189,6 +201,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     // 'siguientesOpciones', esas pasan a ser las nuevas opciones visibles.
     case 'ELEGIR_OPCION_EVENTO': {
       if (state.fase !== 'EVENTO' || !state.eventoSeleccionado || !state.eventoOpcionesActuales) return state;
+      if (!opcionEsFactible(action.opcion, state.game)) return state;
 
       const nuevoGame = aplicarEfectosConDinamica(state.game, action.opcion);
 
@@ -198,6 +211,19 @@ export function appReducer(state: AppState, action: AppAction): AppState {
           ? resultado.texto(nuevoGame)
           : resultado.texto
         : TEXTO_RESULTADO_POR_DEFECTO;
+
+      // Fin de juego anticipado (ej. golpe de Estado): corta el flujo normal
+      // del evento y lleva directo a la pantalla de fin, sin esperar turno 12.
+      if (resultado?.finDeJuegoSi && resultado.finDeJuegoSi(nuevoGame)) {
+        return {
+          ...state,
+          game: nuevoGame,
+          fase: 'FIN',
+          eventoResultado: textoResultado,
+          eventoOpcionesActuales: null,
+          resultadoFinal: finalizarPorGolpe(resultado.mensajeFin ?? textoResultado),
+        };
+      }
 
       const siguientesOpciones =
         resultado?.siguientesOpciones && resultado.siguientesOpciones.length > 0

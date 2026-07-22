@@ -1,6 +1,9 @@
 import type { Evento } from '../model/contentTypes';
+import { apoyoPopular, lealtadPromedioFFAA, polarizacion } from '../model/derived';
 
 export const eventos: Evento[] = [
+
+  // EVENTO NUEVO - BORRADOR LISTO
   {
     id: 'paro_camioneros',
     titulo: 'Paro de Camioneros',
@@ -14,13 +17,11 @@ export const eventos: Evento[] = [
           'polls.dc': -0.5,
           'opp.relacionesPN': 0.5,
         },
-        // Ejemplo de resultado CONDICIONAL: el texto cambia según cómo
-        // quedó el presupuesto nacional tras aplicar los efectos.
         resultado: {
           texto: (s) => s.pais.presupuestoNacional < 2
             ? 'Las arcas fiscales quedan exhaustas tras la negociación, pero el paro se levanta sin mayores incidentes.'
             : 'El paro se levanta tras una negociación que deja satisfechos a ambos lados, sin comprometer mayormente las finanzas públicas.',
-          preguntaSiguiente: null,
+          preguntaSiguiente: undefined,
           siguientesOpciones: undefined
         },
       },
@@ -32,8 +33,6 @@ export const eventos: Evento[] = [
           'polls.up': -1,
           'opp.militarizacionPyL': 1,
         },
-        // Ejemplo de resultado que ADEMÁS abre una nueva decisión anidada,
-        // dentro del mismo evento, dependiendo de la lealtad del Ejército.
         resultado: {
           texto: (s) =>
             s.ffaa.lealtadEjercito < 60
@@ -42,17 +41,24 @@ export const eventos: Evento[] = [
           preguntaSiguiente: '¿Cómo manejas el malestar en la oficialidad?',
           siguientesOpciones: [
             {
-              texto: 'Ofrecer garantías públicas a la oficialidad',
+              texto: 'Ofrecer garantías democráticas a la oficialidad',
               intensidad: 1,
-              efectos: { 'ffaa.lealtadEjercito': 1.5 },
+              efectos: {
+                'ffaa.lealtadEjercito': 1.5,
+                'partido.militarizacionMIR': -1,
+              },
               resultado: {
-                texto: 'El gesto calma parcialmente los ánimos castrenses. Los cuarteles vuelven a la rutina.',
+                texto: 'El gesto calma a los oficiales, la tensión militar disminuye.',
               },
             },
             {
               texto: 'Ignorar el malestar y seguir adelante',
               intensidad: 5,
-              efectos: { 'partido.militarizacionMIR': 1 },
+              efectos: {
+                'partido.militarizacionMIR': 1,
+                'ffaa.lealtadEjercito': -2.5,
+                'ffaa.lealtadCarabineros': -1,
+              },
               resultado: {
                 texto:
                   'El malestar queda latente. El MIR interpreta la señal como luz verde para organizarse con mayor autonomía.',
@@ -63,6 +69,9 @@ export const eventos: Evento[] = [
       },
     ],
   },
+
+
+  // EVENTO NUEVO
   {
     id: 'manifestacion_opp',
     titulo: 'Las cacerolas se escuchan en La Moneda',
@@ -77,10 +86,14 @@ export const eventos: Evento[] = [
           'opp.militarizacionPyL': 1,
           'polls.dc': 0.3,
         },
-        resultado: undefined
+        resultado: {
+          texto: 'Los sectores de la derecha marchan por la alameda, blindados por militantes de Patria y Libertad.',
+          preguntaSiguiente: undefined,
+          siguientesOpciones: undefined,
+        }
       },
       {
-        texto: 'Ordenar a Carabineros reprimer la manifestación',
+        texto: 'Ordenar a Carabineros reprimir la manifestación',
         intensidad: 8,
         efectos: {
           'ffaa.lealtadCarabineros': -4.5,
@@ -91,14 +104,21 @@ export const eventos: Evento[] = [
           'opp.relacionesDC': -1,
           'opp.militarizacionPyL': 2,
         },
-        resultado: undefined
+        resultado: {
+          texto: 'Las fuerzas de orden rompen la manifestación y la imagen de carabineros golpeando amas de casas recorre el país.',
+          preguntaSiguiente: undefined,
+          siguientesOpciones: undefined,
+        }
       },
     ],
   },
+
+
+  // EVENTO NUEVO
   {
     id: 'eleccion_complementaria',
-    titulo: 'Elección Parlamentaria Complementaria',
-    descripcion: 'Un distrito realiza una elección complementaria; se pide apoyo del gobierno.',
+    titulo: 'Elección Julio 1972',
+    descripcion: 'Se celebrarán las elecciones complementarias en la Cuarta Agrupación Departamental luego de la trágica muerte del diputado comunista Pontigo. Los sectores comunistas de la coalición piden la participación del compañero presidente a favor de la candidata comunista Amanda Altamirano.',
     opciones: [
       {
         texto: 'Volcar recursos estatales a la campaña',
@@ -108,20 +128,34 @@ export const eventos: Evento[] = [
           'polls.up': 2.5,
           'opp.relacionesDC': -1,
         },
-        resultado: undefined
+        resultado: {
+          texto: (s) => s.polls.up > s.polls.dc
+            ? '¡La victoria es de la compañera Altamirano y la UP! Las fuerzas reaccionarias son relegadas a un segundo lugar.'
+            : 'La oposición triunfa en la elección, los sectores radicales del gobierno culpan a la desinformación del gran empresariado.',
+          preguntaSiguiente: undefined,
+          siguientesOpciones: undefined,
+        }
       },
       {
-        texto: 'No intervenir',
+        texto: 'No es asunto del gobierno una elección complementaria',
         intensidad: 0,
         efectos: {
           'partido.cohesionPartidaria': -1,
-          'polls.up': -0.3,
+          'polls.up': -0.4,
         },
-        resultado: undefined
+        resultado: {
+          texto: (s) => s.polls.up > s.polls.dc
+            ? '¡La victoria es de la compañera Altamirano y la UP! Las fuerzas reaccionarias son relegadas a un segundo lugar.'
+            : 'La oposición triunfa en la elección, los sectores radicales del gobierno culpan a la desinformación del gran empresariado.',
+          preguntaSiguiente: undefined,
+          siguientesOpciones: undefined,
+        }
       },
     ],
   },
-  {
+
+  // EVENTO NUEVO
+ {
     id: 'rumor_golpe',
     titulo: 'Rumores de Conspiración',
     descripcion: 'Inteligencia militar reporta reuniones sospechosas entre oficiales.',
@@ -134,7 +168,31 @@ export const eventos: Evento[] = [
           'ffaa.lealtadAerea': -5,
           'polls.up': 1.5,
         },
-        resultado: undefined
+        resultado: {
+          texto: (s) => {
+            const golpeEnMarcha = polarizacion(s) > 30 || lealtadPromedioFFAA(s) < 45;
+            if (!golpeEnMarcha) {
+              return 'La purga genera roces, pero los cuarteles se mantienen bajo control del mando institucional. El rumor de conspiración pierde fuerza por ahora.';
+            }
+            const contragolpeExitoso = apoyoPopular(s) > 40 || s.partido.militarizacionMIR >= 7;
+            if (contragolpeExitoso) {
+              return 'La purga desata la ira de la oficialidad: unidades del Ejército y la Fuerza Aérea se acuartelan sin autorización. Pero la rápida movilización de las bases obreras y los cordones industriales frena la asonada antes de que se consolide. El gobierno sobrevive, magullado.';
+            }
+            return 'La purga desata la ira de la oficialidad: unidades del Ejército y la Fuerza Aérea se acuartelan sin autorización, sin encontrar resistencia organizada. La situación se sale de control con rapidez.';
+          },
+          // Se dispara un golpe si la polarización es muy alta o la lealtad
+          // militar promedio muy baja. Si además el apoyo popular es alto o
+          // la militarización del MIR es muy alta, el golpe es contrarrestado
+          // y la partida continúa; si no, la partida termina aquí.
+          finDeJuegoSi: (s) => {
+            const golpeEnMarcha = polarizacion(s) > 30 || lealtadPromedioFFAA(s) < 45;
+            if (!golpeEnMarcha) return false;
+            const contragolpeExitoso = apoyoPopular(s) > 40 || s.partido.militarizacionMIR >= 7;
+            return !contragolpeExitoso;
+          },
+          mensajeFin:
+            'El golpe de Estado triunfa. Sin respaldo popular suficiente ni capacidad de movilización para resistir, el Gobierno de la Unidad Popular es derrocado por la fuerza. La "vía chilena al socialismo" termina aquí.',
+        },
       },
       {
         texto: 'Ignorar el rumor para no generar más tensión',
@@ -143,10 +201,14 @@ export const eventos: Evento[] = [
           'ffaa.lealtadEjercito': -1,
           'partido.militarizacionMIR': 1,
         },
-        resultado: undefined
+        resultado: {
+          texto: 'El rumor se diluye entre la rutina castrense, pero queda una sensación de alerta latente que sería imprudente ignorar por mucho más tiempo.',
+        },
       },
     ],
   },
+
+  // EVENTO NUEVO
   {
     id: 'toma_fabrica',
     titulo: 'Toma de Fábrica',

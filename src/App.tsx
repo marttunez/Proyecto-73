@@ -7,10 +7,11 @@ import { ManoActual } from './components/ManoActual';
 import { DiarioEntrada } from './components/DiarioEntrada';
 import { DiarioEvento } from './components/DiarioEvento';
 import { DiarioModal } from './components/DiarioModal';
-import { EventosMinimizados } from './components/EventoMinimizado';
 import { IndicadoresPanel } from './components/IndicadoresPanel';
 import { ParlamentoView } from './components/ParlamentoView';
+import { FinAnticipadoView } from './components/FinAnticipadoView';
 import type { Opcion } from './model/contentTypes';
+import { EventosMinimizados } from './components/EventoMinimizado';
 
 function App() {
   const [state, dispatch] = useReducer(appReducer, undefined, crearAppStateInicial);
@@ -28,9 +29,17 @@ function App() {
   }
 
   if (state.fase === 'FIN' && state.resultadoFinal) {
+    if (state.resultadoFinal.tipo === 'golpe') {
+      return (
+        <FinAnticipadoView
+          mensaje={state.resultadoFinal.mensaje ?? 'El gobierno ha sido derrocado.'}
+          onReiniciar={() => dispatch({ type: 'RESET' })}
+        />
+      );
+    }
     return (
       <ParlamentoView
-        escanos={state.resultadoFinal.escanos}
+        escanos={state.resultadoFinal.escanos ?? []}
         resultado={state.resultadoFinal.resultado}
         onReiniciar={() => dispatch({ type: 'RESET' })}
       />
@@ -47,10 +56,14 @@ function App() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {state.fase === 'TURNO' && (
             <>
-              <h4>¿Qué tipo de decisión quieres tomar?</h4>
+              <p>
+                Robos restantes este turno: <strong>{state.robosRestantes}</strong>
+              </p>
+
+              <h4>Mazos — clic para robar</h4>
               <div style={{ display: 'flex', gap: 12 }}>
                 <DeckPila
-                  titulo="Partidaria"
+                  titulo="Partido"
                   cartasRestantes={state.mazoPartido.disponibles.length}
                   disabled={state.robosRestantes <= 0 || manoLlena}
                   onClick={() => dispatch({ type: 'ROBAR_CARTA', tipo: 'partido' })}
@@ -64,7 +77,7 @@ function App() {
               </div>
 
               <h4 style={{ marginTop: 24 }}>
-                Mano{' '}
+                Mano — clic para abrir{' '}
                 <span style={{ fontWeight: 'normal', fontSize: 14, color: manoLlena ? '#c0392b' : '#999' }}>
                   ({state.mano.length}/{LIMITE_MANO}
                   {manoLlena ? ' — mano llena' : ''})
@@ -81,7 +94,7 @@ function App() {
                   <DiarioEntrada
                     titulo={state.cartaSeleccionada.titulo}
                     descripcion={state.cartaSeleccionada.descripcion}
-                    etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Oficina del Partido' : 'La Moneda'}
+                    etiqueta={state.cartaSeleccionada.tipo === 'partido' ? 'Oficinas del Partido' : 'La Moneda'}
                     colorAcento={state.cartaSeleccionada.tipo === 'partido' ? '#8a6d3b' : '#2980b9'}
                     opciones={state.cartaSeleccionada.opciones}
                     game={state.game}
@@ -95,7 +108,7 @@ function App() {
           {state.fase === 'EVENTO' && !state.eventoSeleccionado && (
             <EventosMinimizados
               eventos={state.eventosPendientes}
-              onSeleccionar={(evento: any) => dispatch({ type: 'SELECCIONAR_EVENTO', evento })}
+              onSeleccionar={(evento) => dispatch({ type: 'SELECCIONAR_EVENTO', evento })}
             />
           )}
 

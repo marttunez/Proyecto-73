@@ -19,7 +19,7 @@ export const cartasPartido: Carta[] = [
           'partido.registradosMIR': 1500,
           'pais.presupuestoNacional': 2,
         },
-        resultado: null
+        resultado: undefined
       },
       {
         texto: 'Negociar con la DC',
